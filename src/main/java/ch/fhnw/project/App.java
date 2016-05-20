@@ -35,9 +35,6 @@ public class App extends Application {
             fp = getData(file);
             fp.readData(file);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
 
 
         Button button = new Button("Click me...");
@@ -56,47 +53,64 @@ public class App extends Application {
         );
 
         ChoiceBox cb2 = new ChoiceBox();
-        cb.setItems(FXCollections.observableArrayList(
+        cb2.setItems(FXCollections.observableArrayList(
                 "1", "2 ", "3", "4")
         );
 
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        final ScatterChart<Number,Number> sc = new ScatterChart<Number,Number>(xAxis,yAxis);
+         NumberAxis xAxis = new NumberAxis();
+         NumberAxis yAxis = new NumberAxis();
+         ScatterChart<Number,Number> sc = new ScatterChart<Number,Number>(xAxis,yAxis);
 
 
-        xAxis.setLabel("Age (years)");
-        yAxis.setLabel("Returns to date");
-        sc.setTitle("Investment Overview");
+        xAxis.setLabel("Axis1");
+        yAxis.setLabel("Axis2");
+        sc.setTitle("...");
 
         sc.setPrefSize(800,400);
+            sc.setLegendVisible(false);
 
-        XYChart.Series series2 = new XYChart.Series();
+        XYChart.Series series1 = new XYChart.Series();
 
-        series2.getData().add(new XYChart.Data(4.2, 193.2));
+            for (DataModel model : fp.getList()) {
+                for (double d : model.getValues()) {
+                    //System.out.print(d);
+
+                }
+                System.out.println();
+
+            }
+           // series2.getData().add(new XYChart.Data(4.2, 193.2));
+
+
+        sc.getData().addAll(series1);
+
 
 //---------------------------histogram----------------------------------------------------------------------------
         final CategoryAxis xAxis1 = new CategoryAxis();
         final NumberAxis yAxis1 = new NumberAxis();
-        final BarChart<String,Number> barChart =
-                new BarChart<>(xAxis1,yAxis1);
+        final BarChart<String,Number> barChart = new BarChart<>(xAxis1,yAxis1);
         barChart.setCategoryGap(0);
         barChart.setBarGap(0);
 
-        xAxis.setLabel("Range");
-        yAxis.setLabel("Population");
+        xAxis.setLabel("Axis1");
+        yAxis.setLabel("Axis2");
 
-        XYChart.Series series1 = new XYChart.Series();
-        series1.setName("Histogram");
-        series1.getData().add(new XYChart.Data("0-10", 2));
-        series1.getData().add(new XYChart.Data("10-20", 3));
-        series1.getData().add(new XYChart.Data("20-30", 5));
-        series1.getData().add(new XYChart.Data("30-40", 3));
-        series1.getData().add(new XYChart.Data("40-50", 4));
+        XYChart.Series series2 = new XYChart.Series();
+        series2.setName("Histogram");
+        series2.getData().add(new XYChart.Data("0-10", 2));
+        series2.getData().add(new XYChart.Data("10-20", 3));
+        series2.getData().add(new XYChart.Data("20-30", 5));
+        series2.getData().add(new XYChart.Data("30-40", 3));
+        series2.getData().add(new XYChart.Data("40-50", 4));
+
+           // barChart.getData().addAll(serie2);
 
 
         final CategoryAxis xAxis2 = new CategoryAxis();
-        final NumberAxis yAxis2 = new NumberAxis();
+            xAxis2.setTickLabelsVisible(false);
+
+            final NumberAxis yAxis2 = new NumberAxis();
+            yAxis2.setTickLabelsVisible(false);
         final BarChart<String,Number> barChart2 = new BarChart<>(xAxis1,yAxis1);
         barChart2.setCategoryGap(0);
         barChart2.setBarGap(0);
@@ -104,6 +118,9 @@ public class App extends Application {
 
 
 //-------------------------------------------------------------------------------------------------------
+
+
+
 
         HBox firstLine = new HBox();
         firstLine.getChildren().addAll(cb,cb2, button,checkbox);
@@ -141,38 +158,9 @@ public class App extends Application {
         stage.setTitle("Hello JavaFX!");
         stage.show();
 
-
-
-
-      /*  try {
-
-
-            for (DataModel m : fp.getList()) {
-                System.out.print(m.getName() + " Values: ");
-
-
-                for (double d : m.getValues()) {
-                    System.out.print(d + "/");
-                }
-                System.out.println();
-            }
-            System.out.println("______________________________");
-
-
-            for (DataModel model : fp.getList()) {
-                System.out.print(model.getValue(1));
-                System.out.print("/");
-
-
-            }
-
-
-
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }*/
-
+        }
 
 
     }
