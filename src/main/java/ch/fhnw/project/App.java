@@ -17,13 +17,27 @@ public class App extends Application {
 
         FileChooser filechooser = new FileChooser();
         File file = filechooser.showOpenDialog(stage);
-        
-        FileParser fp = new TabDelimited();
-        
-        fp.readData(file);
-        fp.getList();
 
-//test
+        FileParser fp ;
+
+        try {
+            fp = getData(file);
+
+            fp.readData(file);
+            for(DataModel m : fp.getList()){
+                System.out.print(m.getName() + " Values: ");
+
+                for(double d : m.getValues()){
+                    System.out.print(d + "/" );
+                }
+                System.out.println();
+            }
+            System.out.println("______________________________");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
 
 
     }
