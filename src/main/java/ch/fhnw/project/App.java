@@ -28,4 +28,20 @@ public class App extends Application {
 
     }
 
+    public FileParser getData(File file) throws FileNotFoundException {
+        String fileNameFormat = file.getAbsolutePath();
+        FileParser fp;
+        if (fileNameFormat.endsWith(".txt")) {
+
+            return new TabDelimited();
+
+        } else if (fileNameFormat.endsWith(".lin")) {
+
+            return new LineOriented();
+        }
+
+        return null;
+    }
+
+
 }
