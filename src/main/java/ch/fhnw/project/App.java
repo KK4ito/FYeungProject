@@ -6,6 +6,7 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.SQLClientInfoException;
 import java.util.*;
 
 public class App extends Application {
@@ -71,53 +73,40 @@ public class App extends Application {
 
         XYChart.Series series1 = new XYChart.Series();
 
-            for (DataModel model : fp.getList()) {
-                for (double d : model.getValues()) {
-                    //System.out.print(d);
 
+            List<XYChart.Series<Double, Double>> answer = FXCollections.observableArrayList();
+            XYChart.Series<Double, Double> aSeries = new XYChart.Series<Double, Double>();
+            List<List> liste;
+            List<String> list;
+
+
+
+
+            for(DataModel m : fp.getList()){
+                String name = m.getName();
+                List<Double> lstValue = m.getValues();
+
+
+                for (int i =0;i<lstValue.size();i++){
+                   // series1.getData().add(new XYChart.Data(i, lstValue.get(i)));
+                    System.out.print(lstValue.get(i));
                 }
                 System.out.println();
-
             }
-           // series2.getData().add(new XYChart.Data(4.2, 193.2));
 
+            /*for(DataModel m : fp.getList()){
+
+                for(double d : m.getValues()){
+                    System.out.print(d + "/" );
+                }
+                System.out.println();
+            }
+*/
 
         sc.getData().addAll(series1);
 
 
-//---------------------------histogram----------------------------------------------------------------------------
-        final CategoryAxis xAxis1 = new CategoryAxis();
-        final NumberAxis yAxis1 = new NumberAxis();
-        final BarChart<String,Number> barChart = new BarChart<>(xAxis1,yAxis1);
-        barChart.setCategoryGap(0);
-        barChart.setBarGap(0);
 
-        xAxis.setLabel("Axis1");
-        yAxis.setLabel("Axis2");
-
-        XYChart.Series series2 = new XYChart.Series();
-        series2.setName("Histogram");
-        series2.getData().add(new XYChart.Data("0-10", 2));
-        series2.getData().add(new XYChart.Data("10-20", 3));
-        series2.getData().add(new XYChart.Data("20-30", 5));
-        series2.getData().add(new XYChart.Data("30-40", 3));
-        series2.getData().add(new XYChart.Data("40-50", 4));
-
-           // barChart.getData().addAll(serie2);
-
-
-        final CategoryAxis xAxis2 = new CategoryAxis();
-            xAxis2.setTickLabelsVisible(false);
-
-            final NumberAxis yAxis2 = new NumberAxis();
-            yAxis2.setTickLabelsVisible(false);
-        final BarChart<String,Number> barChart2 = new BarChart<>(xAxis1,yAxis1);
-        barChart2.setCategoryGap(0);
-        barChart2.setBarGap(0);
-
-
-
-//-------------------------------------------------------------------------------------------------------
 
 
 
@@ -136,7 +125,7 @@ public class App extends Application {
         scatterChartLine.setPadding(new Insets(5, 5, 5, 5));
 
 
-        HBox histogramLine = new HBox(barChart,barChart2);
+        HBox histogramLine = new HBox();
         histogramLine.getChildren().addAll();
         histogramLine.setAlignment(Pos.CENTER);
         histogramLine.setSpacing(10);
@@ -178,6 +167,22 @@ public class App extends Application {
         }
 
         return null;
+    }
+
+    private List<XYChart.Series<String, Double>> getChartData() {
+        double aValue = 17.56;
+        ObservableList<XYChart.Series<String, Double>> answer = FXCollections.observableArrayList();
+        XYChart.Series<String, Double> aSeries = new XYChart.Series<String, Double>();
+
+        aSeries.setName("here name of Axis");
+
+
+        for (int i = 0; i < 10; i++) {
+            aSeries.getData().add(new XYChart.Data(Integer.toString(i), aValue));
+            aValue = aValue + Math.random() - .5;
+        }
+        answer.addAll(aSeries);
+        return answer;
     }
 
 
