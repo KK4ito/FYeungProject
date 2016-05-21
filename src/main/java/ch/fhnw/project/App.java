@@ -11,12 +11,17 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -26,164 +31,178 @@ import java.util.*;
 
 public class App extends Application {
 
-    @Override
-    public void start(Stage stage) {
+	static NumberAxis scxAxis = new NumberAxis();
+	static NumberAxis scyAxis = new NumberAxis();
+	
+	static NumberAxis linexAxis = new NumberAxis();
+	static NumberAxis lineyAxis = new NumberAxis();
+	
+	static StackPane root = new StackPane();
+	static LineChart<Number, Number> lineChart ;
+	@Override
+	public void start(Stage stage) {
 
-        FileChooser filechooser = new FileChooser();
-        File file = filechooser.showOpenDialog(stage);
+	//	FileChooser filechooser = new FileChooser();
+	//	File file = filechooser.showOpenDialog(stage);
+		File file = new File("bin/reference-data.txt");
+	//	File file = new File("bin/temperatur-basel-all.txt");
+		
+		FileParser fp;
+		try {
 
-        FileParser fp;
-        try {
-            fp = getData(file);
-            fp.readData(file);
+			fp = getData(file);
+			fp.readData(file);
+			Button button;
+			if(file.exists()){
+				button = new Button("Found");
+			}
+			else {
+				button = new Button("NA");
+			}
 
-
-
-        Button button = new Button("Click me...");
-
-
-        Label label = new Label("My first button:");
-        Label label2 = new Label("The second button:");
-
-        final CheckBox checkbox = new CheckBox("checkBox");
-
-
-
-        ChoiceBox cb = new ChoiceBox();
-        cb.setItems(FXCollections.observableArrayList(
-                "1", "2 ", "3", "4")
-        );
-
-        ChoiceBox cb2 = new ChoiceBox();
-        cb2.setItems(FXCollections.observableArrayList(
-                "1", "2 ", "3", "4")
-        );
-
-         NumberAxis xAxis = new NumberAxis();
-         NumberAxis yAxis = new NumberAxis();
-         ScatterChart<Number,Number> sc = new ScatterChart<Number,Number>(xAxis,yAxis);
-
-
-        xAxis.setLabel("Axis1");
-        yAxis.setLabel("Axis2");
-        sc.setTitle("...");
-
-        sc.setPrefSize(800,400);
-            sc.setLegendVisible(false);
-
-        XYChart.Series series1 = new XYChart.Series();
+			CheckBox checkbox = new CheckBox("checkBox");
+			checkbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			    @Override
+			    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			       	lineChart.setVisible(newValue);
+			       	root.requestLayout();
+			    }
+			});
 
 
-            List<XYChart.Series<Double, Double>> answer = FXCollections.observableArrayList();
-            XYChart.Series<Double, Double> aSeries = new XYChart.Series<Double, Double>();
-            List<List> liste;
-            List<String> list;
+			ChoiceBox cb = new ChoiceBox();
+			cb.setItems(FXCollections.observableArrayList(
+					"1", "2 ", "3", "4")
+					);
+
+			ChoiceBox cb2 = new ChoiceBox();
+			cb2.setItems(FXCollections.observableArrayList(
+					"1", "2 ", "3", "4")
+					);
 
 
+			
+			ScatterChart<Number,Number> sc = new ScatterChart<>(scxAxis,scyAxis);
+
+			
+			lineChart = new LineChart<>(linexAxis, lineyAxis);
+			lineChart.setLegendVisible(false);
+	        lineChart.setAnimated(false);
+	        lineChart.setCreateSymbols(true);
+	        lineChart.setAlternativeRowFillVisible(false);
+	        lineChart.setAlternativeColumnFillVisible(false);
+	        lineChart.setHorizontalGridLinesVisible(false);
+	        lineChart.setVerticalGridLinesVisible(false);
+	        lineChart.getXAxis().setVisible(false); 
+	        lineChart.getYAxis().setVisible(false);
+	        lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
+	        lineChart.setVisible(checkbox.isSelected());
+
+	        
+			
+			sc.setTitle(file.getName());
+
+			sc.setPrefSize(1000,600);
+			sc.setLegendVisible(false);
+
+			lineChart.getData().addAll(createChartData(fp.getList()));
+			sc.getData().addAll(createChartData(fp.getList()));
+
+			HBox firstLine = new HBox();
+			firstLine.getChildren().addAll(cb,cb2, button,checkbox);
+			firstLine.setAlignment(Pos.CENTER);
+			firstLine.setSpacing(10);
+			firstLine.setPadding(new Insets(5, 5, 5, 5));
+
+			/*
+			HBox scatterChartLine = new HBox();
+			scatterChartLine.getChildren().addAll(sc);
+			scatterChartLine.setSpacing(10);
+			scatterChartLine.setPadding(new Insets(5, 5, 5, 5));
 
 
-            for(DataModel m : fp.getList()){
-                String name = m.getName();
-                List<Double> lstValue = m.getValues();
-
-
-                for (int i =0;i<lstValue.size();i++){
-                   // series1.getData().add(new XYChart.Data(i, lstValue.get(i)));
-                    System.out.print(lstValue.get(i));
-                }
-                System.out.println();
-            }
-
-            /*for(DataModel m : fp.getList()){
-
-                for(double d : m.getValues()){
-                    System.out.print(d + "/" );
-                }
-                System.out.println();
-            }
+			HBox histogramLine = new HBox();
+			histogramLine.getChildren().addAll();
+			histogramLine.setAlignment(Pos.CENTER);
+			histogramLine.setSpacing(10);
+			histogramLine.setPadding(new Insets(5, 5, 5, 5));
 */
 
-        sc.getData().addAll(series1);
+			root = new StackPane();
+			
+			root.getChildren().addAll(sc, lineChart);
+			
+			System.out.println(sc.getData().get(0).getData());
+			System.out.println(lineChart.getData().get(0).getData());
+			VBox vBox = new VBox();
+			//vBox.getChildren().addAll(firstLine,scatterChartLine,histogramLine);
+			vBox.getChildren().addAll(firstLine,root);
+			vBox.setAlignment(Pos.CENTER);
+			vBox.setSpacing(10);
+			vBox.setPadding(new Insets(5, 5, 5, 5));
 
 
+			StackPane pane = new StackPane();
+			pane.getChildren().add(vBox);
+			
+			Scene scene = new Scene(pane, 800, 800);
+
+			stage.setScene(scene);
+			stage.setTitle("Hello JavaFX!");
+			stage.show();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
 
+	}
 
+	public FileParser getData(File file) throws FileNotFoundException {
+		String fileNameFormat = file.getAbsolutePath();
+		FileParser fp;
+		if (fileNameFormat.endsWith(".txt")) {
 
+			return new TabDelimited();
 
-        HBox firstLine = new HBox();
-        firstLine.getChildren().addAll(cb,cb2, button,checkbox);
-        firstLine.setAlignment(Pos.CENTER);
-        firstLine.setSpacing(10);
-        firstLine.setPadding(new Insets(5, 5, 5, 5));
+		} else if (fileNameFormat.endsWith(".lin")) {
 
+			return new LineOriented();
+		}
 
-        HBox scatterChartLine = new HBox();
-        scatterChartLine.getChildren().addAll(sc);
+		return null;
+	}
 
-        scatterChartLine.setSpacing(10);
-        scatterChartLine.setPadding(new Insets(5, 5, 5, 5));
+	private Series<Number, Number> createChartData(List<DataModel> lst) {
+		XYChart.Series<Number, Number> series1 =  new XYChart.Series<>();
+		series1 = new XYChart.Series<>();
+		if(lst.size() == 2){
+			DataModel dm1 = lst.get(0);
+			DataModel dm2 = lst.get(1);
+			if(!(dm1.getValues().size() == dm2.getValues().size())){
+				System.out.println("ERROR");
+			}
+			else{
+				System.out.println("OK");
+				scxAxis.setLabel(dm1.getName());
+				scyAxis.setLabel(dm2.getName());
+				for (int i = 0 ; i < dm1.getValues().size(); i++){
+					series1.getData().add(new XYChart.Data<Number, Number>(dm1.getValue(i), dm2.getValue(i)));	
+				}
+				return series1;
+			}
 
+		}
+		else {
+			//TODO
+		}
+		System.out.println("ERROR");
+		return null;
+	}
 
-        HBox histogramLine = new HBox();
-        histogramLine.getChildren().addAll();
-        histogramLine.setAlignment(Pos.CENTER);
-        histogramLine.setSpacing(10);
-        histogramLine.setPadding(new Insets(5, 5, 5, 5));
-
-        VBox vBox = new VBox();
-        vBox.getChildren().addAll(firstLine,scatterChartLine,histogramLine);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.setSpacing(10);
-        vBox.setPadding(new Insets(5, 5, 5, 5));
-
-
-        StackPane pane = new StackPane();
-        pane.getChildren().add(vBox);
-
-        Scene scene = new Scene(pane, 800, 800);
-
-        stage.setScene(scene);
-        stage.setTitle("Hello JavaFX!");
-        stage.show();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public FileParser getData(File file) throws FileNotFoundException {
-        String fileNameFormat = file.getAbsolutePath();
-        FileParser fp;
-        if (fileNameFormat.endsWith(".txt")) {
-
-            return new TabDelimited();
-
-        } else if (fileNameFormat.endsWith(".lin")) {
-
-            return new LineOriented();
-        }
-
-        return null;
-    }
-
-    private List<XYChart.Series<String, Double>> getChartData() {
-        double aValue = 17.56;
-        ObservableList<XYChart.Series<String, Double>> answer = FXCollections.observableArrayList();
-        XYChart.Series<String, Double> aSeries = new XYChart.Series<String, Double>();
-
-        aSeries.setName("here name of Axis");
-
-
-        for (int i = 0; i < 10; i++) {
-            aSeries.getData().add(new XYChart.Data(Integer.toString(i), aValue));
-            aValue = aValue + Math.random() - .5;
-        }
-        answer.addAll(aSeries);
-        return answer;
-    }
+	public static void main(String[] args){
+		launch(args);
+	}
 
 
 }
