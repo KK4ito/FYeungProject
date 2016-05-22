@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.VBoxBuilder;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -31,22 +33,22 @@ import java.util.*;
 
 public class App extends Application {
 
-	static NumberAxis scxAxis = new NumberAxis();
-	static NumberAxis scyAxis = new NumberAxis();
-	
-	static NumberAxis linexAxis = new NumberAxis();
-	static NumberAxis lineyAxis = new NumberAxis();
-	
-	static StackPane root = new StackPane();
-	static LineChart<Number, Number> lineChart ;
+	NumberAxis scxAxis = new NumberAxis();
+	 NumberAxis scyAxis = new NumberAxis();
+
+	 NumberAxis linexAxis = new NumberAxis();
+	 NumberAxis lineyAxis = new NumberAxis();
+
+	 StackPane root = new StackPane();
+	 LineChart<Number, Number> lineChart ;
 	@Override
 	public void start(Stage stage) {
 
-	//	FileChooser filechooser = new FileChooser();
-	//	File file = filechooser.showOpenDialog(stage);
-		File file = new File("bin/reference-data.txt");
-	//	File file = new File("bin/temperatur-basel-all.txt");
-		
+		//	FileChooser filechooser = new FileChooser();
+		//	File file = filechooser.showOpenDialog(stage);
+		File file = new File("bin/helvetia.txt");
+		//	File file = new File("bin/temperatur-basel-all.txt");
+
 		FileParser fp;
 		try {
 
@@ -60,46 +62,50 @@ public class App extends Application {
 				button = new Button("NA");
 			}
 
-			CheckBox checkbox = new CheckBox("checkBox");
+
+
+			CheckBox checkbox = new CheckBox("Line");
 			checkbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			    @Override
-			    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-			       	lineChart.setVisible(newValue);
-			       	root.requestLayout();
-			    }
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+					lineChart.setVisible(newValue);
+					root.requestLayout();
+				}
 			});
 
 
 			ChoiceBox cb = new ChoiceBox();
 			cb.setItems(FXCollections.observableArrayList(
 					"1", "2 ", "3", "4")
-					);
+			);
 
 			ChoiceBox cb2 = new ChoiceBox();
 			cb2.setItems(FXCollections.observableArrayList(
 					"1", "2 ", "3", "4")
-					);
+			);
 
 
-			
+
 			ScatterChart<Number,Number> sc = new ScatterChart<>(scxAxis,scyAxis);
+			sc.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent");
 
-			
+
 			lineChart = new LineChart<>(linexAxis, lineyAxis);
 			lineChart.setLegendVisible(false);
-	        lineChart.setAnimated(false);
-	        lineChart.setCreateSymbols(true);
-	        lineChart.setAlternativeRowFillVisible(false);
-	        lineChart.setAlternativeColumnFillVisible(false);
-	        lineChart.setHorizontalGridLinesVisible(false);
-	        lineChart.setVerticalGridLinesVisible(false);
-	        lineChart.getXAxis().setVisible(false); 
-	        lineChart.getYAxis().setVisible(false);
-	        lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
-	        lineChart.setVisible(checkbox.isSelected());
+			lineChart.setAnimated(false);
+			lineChart.setCreateSymbols(true);
+			lineChart.setAlternativeRowFillVisible(false);
+			lineChart.setAlternativeColumnFillVisible(false);
+			lineChart.setHorizontalGridLinesVisible(false);
+			lineChart.setVerticalGridLinesVisible(false);
+			lineChart.getXAxis().setVisible(false);
+			lineChart.getYAxis().setVisible(false);
+			lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
+			lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
+			lineChart.setVisible(checkbox.isSelected());
 
-	        
-			
+
+
 			sc.setTitle(file.getName());
 
 			sc.setPrefSize(1000,600);
@@ -129,9 +135,9 @@ public class App extends Application {
 */
 
 			root = new StackPane();
-			
+
 			root.getChildren().addAll(sc, lineChart);
-			
+
 			System.out.println(sc.getData().get(0).getData());
 			System.out.println(lineChart.getData().get(0).getData());
 			VBox vBox = new VBox();
@@ -144,7 +150,7 @@ public class App extends Application {
 
 			StackPane pane = new StackPane();
 			pane.getChildren().add(vBox);
-			
+
 			Scene scene = new Scene(pane, 800, 800);
 
 			stage.setScene(scene);
@@ -176,6 +182,7 @@ public class App extends Application {
 	private Series<Number, Number> createChartData(List<DataModel> lst) {
 		XYChart.Series<Number, Number> series1 =  new XYChart.Series<>();
 		series1 = new XYChart.Series<>();
+
 		if(lst.size() == 2){
 			DataModel dm1 = lst.get(0);
 			DataModel dm2 = lst.get(1);
@@ -187,7 +194,8 @@ public class App extends Application {
 				scxAxis.setLabel(dm1.getName());
 				scyAxis.setLabel(dm2.getName());
 				for (int i = 0 ; i < dm1.getValues().size(); i++){
-					series1.getData().add(new XYChart.Data<Number, Number>(dm1.getValue(i), dm2.getValue(i)));	
+					series1.getData().add(new XYChart.Data<Number, Number> (dm1.getValue(i), dm2.getValue(i)));
+
 				}
 				return series1;
 			}
