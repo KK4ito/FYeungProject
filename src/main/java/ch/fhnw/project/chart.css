@@ -2,10 +2,10 @@
 -fx-background-color: transparent;
 }
 .default-color0.chart-series-line {
--fx-stroke: blue;
+-fx-stroke: red;
 } 
 .default-color0.chart-line-symbol { 
-    -fx-background-color: blue, white;
+    -fx-background-color: red, red;
 }
 
 
