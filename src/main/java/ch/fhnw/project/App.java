@@ -2,6 +2,7 @@ package ch.fhnw.project;
 
 import ch.fhnw.project.datenmodell.DataModel;
 import ch.fhnw.project.io.*;
+import com.sun.tools.internal.xjc.generator.util.WhitespaceNormalizer;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -69,7 +70,8 @@ public class App extends Application {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 					lineChart.setVisible(newValue);
-					root.requestLayout();
+
+                    root.requestLayout();
 				}
 			});
 
@@ -86,12 +88,11 @@ public class App extends Application {
 
 
 
-			ScatterChart<Number,Number> sc = new ScatterChart<>(scxAxis,scyAxis);
-			sc.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent");
 
 
 			lineChart = new LineChart<>(linexAxis, lineyAxis);
-			lineChart.setLegendVisible(false);
+
+            lineChart.setLegendVisible(false);
 			lineChart.setAnimated(false);
 			lineChart.setCreateSymbols(true);
 			lineChart.setAlternativeRowFillVisible(false);
@@ -105,14 +106,14 @@ public class App extends Application {
 			lineChart.setVisible(checkbox.isSelected());
 
 
+            ScatterChart<Number, Number> sc = getScatterChart(file, fp);
 
-			sc.setTitle(file.getName());
 
-			sc.setPrefSize(1000,600);
-			sc.setLegendVisible(false);
 
-			lineChart.getData().addAll(createChartData(fp.getList()));
-			sc.getData().addAll(createChartData(fp.getList()));
+
+
+            lineChart.getData().addAll(createChartData(fp.getList()));
+
 
 			HBox firstLine = new HBox();
 			firstLine.getChildren().addAll(cb,cb2, button,checkbox);
@@ -164,7 +165,17 @@ public class App extends Application {
 
 	}
 
-	public FileParser getData(File file) throws FileNotFoundException {
+    private ScatterChart<Number, Number> getScatterChart(File file, FileParser fp) {
+        ScatterChart<Number,Number> sc = new ScatterChart<>(scxAxis,scyAxis);
+
+        //sc.setTitle(file.getName());
+        sc.setPrefSize(1000,600);
+        sc.setLegendVisible(false);
+        sc.getData().addAll(createChartData(fp.getList()));
+        return sc;
+    }
+
+    public FileParser getData(File file) throws FileNotFoundException {
 		String fileNameFormat = file.getAbsolutePath();
 		FileParser fp;
 		if (fileNameFormat.endsWith(".txt")) {
@@ -193,6 +204,9 @@ public class App extends Application {
 				System.out.println("OK");
 				scxAxis.setLabel(dm1.getName());
 				scyAxis.setLabel(dm2.getName());
+                linexAxis.setLabel(dm1.getName());
+                lineyAxis.setLabel(dm2.getName());
+
 				for (int i = 0 ; i < dm1.getValues().size(); i++){
 					series1.getData().add(new XYChart.Data<Number, Number> (dm1.getValue(i), dm2.getValue(i)));
 
@@ -207,6 +221,9 @@ public class App extends Application {
 		System.out.println("ERROR");
 		return null;
 	}
+
+
+
 
 	public static void main(String[] args){
 		launch(args);
