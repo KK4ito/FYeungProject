@@ -2,7 +2,6 @@ package ch.fhnw.project;
 
 import ch.fhnw.project.datenmodell.DataModel;
 import ch.fhnw.project.io.*;
-import com.sun.tools.internal.xjc.generator.util.WhitespaceNormalizer;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,27 +11,20 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
-import javafx.scene.chart.XYChart.Data;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.SQLClientInfoException;
 import java.util.*;
 
-import static com.sun.java.accessibility.util.AWTEventMonitor.addComponentListener;
 import static java.lang.StrictMath.ceil;
+
 
 public class App extends Application {
 
@@ -44,6 +36,10 @@ public class App extends Application {
 
 	 StackPane root = new StackPane();
 	 LineChart<Number, Number> lineChart ;
+
+	ChoiceBox cb = new ChoiceBox();
+	ChoiceBox cb2 = new ChoiceBox();
+
 	@Override
 	public void start(Stage stage) {
 		StackPane pane = new StackPane();
@@ -80,16 +76,28 @@ public class App extends Application {
 			});
 
 
-			ChoiceBox cb = new ChoiceBox();
-			cb.setItems(FXCollections.observableArrayList(
-					"1", "2 ", "3", "4")
-			);
 
-			ChoiceBox cb2 = new ChoiceBox();
-			cb2.setItems(FXCollections.observableArrayList(
-					"1", "2 ", "3", "4")
-			);
+			for (DataModel model : fp.getList()) {
 
+				//TODO 	WORDCUTTER
+				cb.getItems().add(model.getName());
+				cb2.getItems().add(model.getName());
+			}
+
+			cb.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+				@Override
+				public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+					System.out.println(cb.getItems().get((Integer) number2));
+
+				}
+			});
+
+			cb2.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+				@Override
+				public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+					System.out.println(cb2.getItems().get((Integer) number2));
+				}
+			});
 
 
 
@@ -112,8 +120,7 @@ public class App extends Application {
 
             ScatterChart<Number, Number> sc = getScatterChart(file, fp);
 
-
-            lineChart.getData().addAll(createChartData(fp.getList()));
+            lineChart.getData().addAll(createChartData(fp.getList(),0,0));
 
 
 
@@ -122,7 +129,7 @@ public class App extends Application {
 			NumberAxis yAxis = new NumberAxis();
 			BarChart barChart = new BarChart(xAxis, yAxis);
 			barChart.setData(createBarChartData(fp.getList(),0));
-			barChart.setLegendVisible(false);
+			//barChart.setLegendVisible(true);
 			xAxis.setTickLabelsVisible(false);
 			barChart.setBarGap(0);
 			barChart.setCategoryGap(0);
@@ -130,19 +137,17 @@ public class App extends Application {
 			barChart.prefWidth(1000);
 
 
-
-
-
-
 			CategoryAxis xAxis2 = new CategoryAxis();
 			NumberAxis yAxis2 = new NumberAxis();
 			BarChart barChart2 = new BarChart(xAxis2, yAxis2);
 			barChart2.setData(createBarChartData(fp.getList(),1));
-			barChart2.setLegendVisible(false);
+		//	barChart2.setLegendVisible(true);
 			xAxis2.setTickLabelsVisible(false);
 			barChart2.setBarGap(0);
 			barChart2.setCategoryGap(0);
 			barChart2.prefWidth(1000);
+
+
 
 			HBox firstLine = new HBox();
 			firstLine.getChildren().addAll(cb,cb2, label,checkbox);
@@ -204,7 +209,7 @@ public class App extends Application {
         lineChart.setTitle(file.getName());*/
         sc.setPrefSize(1000,600);
         sc.setLegendVisible(false);
-        sc.getData().addAll(createChartData(fp.getList()));
+        sc.getData().addAll(createChartData(fp.getList(),0,0));
         return sc;
     }
 
@@ -223,7 +228,7 @@ public class App extends Application {
 		return null;
 	}
 
-	private Series<Number, Number> createChartData(List<DataModel> lst) {
+	private Series<Number, Number> createChartData(List<DataModel> lst, int var1, int var2) {
 		XYChart.Series<Number, Number> series1 =  new XYChart.Series<>();
 		series1 = new XYChart.Series<>();
 
@@ -244,16 +249,19 @@ public class App extends Application {
 					series1.getData().add(new XYChart.Data<Number, Number> (dm1.getValue(i), dm2.getValue(i)));
 
 				}
+
+
 				return series1;
 			}
 
 		}
 		else {
-			//TODO
+			//TODO for more Var.
 		}
 		System.out.println("ERROR");
 		return null;
 	}
+
 
 	private ObservableList<Series<String, Double>> createBarChartData(List<DataModel> lst, int select) {
 
@@ -261,16 +269,17 @@ public class App extends Application {
 		Series<String, Double> aSeries = new Series<String, Double>();
 
 		DataModel dm1 = lst.get(select);
-		//DataModel dm2 = lst.get(1);
-
-
+		aSeries.setName(dm1.getName());
 		Double max = Collections.max(dm1.getValues());
 		Double min = Collections.min((dm1.getValues()));
+
 		double range = ceil(Math.sqrt(dm1.getValues().size()));
 		double width = Math.abs((max-min)/range);
-		int n=0;
+
+
 		int count = 0;
 		int testCount =0;
+
 		for (int i = 0; i < range; i++) {
 			for (int m = 0 ; m < dm1.getValues().size(); m++){
 
@@ -278,8 +287,6 @@ public class App extends Application {
 					count++;
 				}
 			}
-			n++;
-
 			System.out.println(count);
 			aSeries.getData().add(new XYChart.Data(Integer.toString(i), count));
 			testCount+=count;
@@ -292,9 +299,6 @@ public class App extends Application {
 
 		return answer;
 	}
-
-
-
 
 	public static void main(String[] args){
 		launch(args);
