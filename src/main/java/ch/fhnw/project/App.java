@@ -37,8 +37,8 @@ public class App extends Application {
 	 StackPane root = new StackPane();
 	 LineChart<Number, Number> lineChart ;
 
-	ChoiceBox cb = new ChoiceBox();
-	ChoiceBox cb2 = new ChoiceBox();
+	ComboBox cb = new ComboBox();
+	ComboBox cb2 = new ComboBox();
 
 	@Override
 	public void start(Stage stage) {
@@ -83,6 +83,7 @@ public class App extends Application {
 				cb.getItems().add(model.getName());
 				cb2.getItems().add(model.getName());
 			}
+
 
 			cb.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 				@Override
