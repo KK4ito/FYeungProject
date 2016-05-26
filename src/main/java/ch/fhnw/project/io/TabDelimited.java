@@ -2,19 +2,15 @@ package ch.fhnw.project.io;
 
 import java.util.*;
 
-import ch.fhnw.project.datenmodell.DataModel;
+import ch.fhnw.project.datenmodell.Variable;
 
 import java.io.*;
 
 public class TabDelimited implements FileParser{
 
-	List<DataModel> lstData;
-	File file;	
-	
 	@Override
-	public void readData(File file) {
-		this.file = file;
-		lstData = new ArrayList<>();
+	public List<Variable> readData(File file) {
+		List<Variable> lstData = new ArrayList<>();
 		
 		
 		try{
@@ -24,7 +20,7 @@ public class TabDelimited implements FileParser{
 			String[] splittedString = line.split("\\t");
 				
 			for(int i = 0; i < splittedString.length; i++){
-				lstData.add(new DataModel(splittedString[i]));
+				lstData.add(new Variable(splittedString[i]));
 			}
 			
 			while((line = br.readLine()) != null){
@@ -43,13 +39,8 @@ public class TabDelimited implements FileParser{
 			e.printStackTrace();
 		}
 		
+		return lstData;
 		
-		
-	}
-
-	@Override
-	public List<DataModel> getList() {
-		return this.lstData;
 	}
 
 }

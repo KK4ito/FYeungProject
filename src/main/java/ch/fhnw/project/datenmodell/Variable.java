@@ -6,12 +6,12 @@ import java.util.List;
 /**
  * Created by FelixYeung on 19.05.16.
  */
-public class DataModel {
+public class Variable {
 	
     private List<Double> lstValue;
     private String name;
 
-    public DataModel(String name){
+    public Variable(String name){
     	this.name = name;
         lstValue = new ArrayList<>();
     }
