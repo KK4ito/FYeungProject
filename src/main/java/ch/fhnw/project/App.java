@@ -1,6 +1,7 @@
 package ch.fhnw.project;
 
 import ch.fhnw.project.datenmodell.Variable;
+import ch.fhnw.project.gui.HistogramChart;
 import ch.fhnw.project.io.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
@@ -17,6 +18,7 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -41,6 +43,8 @@ public class App extends Application {
 	ComboBox cb = new ComboBox();
 	ComboBox cb2 = new ComboBox();
 
+	double circle;
+
 
 
 	@Override
@@ -57,6 +61,8 @@ public class App extends Application {
 
 		final ColorPicker colorPicker = new ColorPicker();
 		//colorPicker.setValue(Color.CORAL);
+
+		Slider slider = new Slider(0,100,20);
 
 		FileParser fp;
 		try {
@@ -123,6 +129,7 @@ public class App extends Application {
 			lineChart.getYAxis().setVisible(false);
 			lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
 			lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
+		//	lineChart.setTitle(file.getName());
 			lineChart.setVisible(checkbox.isSelected());
 
 
@@ -130,12 +137,15 @@ public class App extends Application {
 
             lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
 
+
 			colorPicker.setOnAction(new EventHandler() {
 				public void handle(Event t) {
+
 					lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
 
 				}
 			});
+
 
 
 
@@ -159,19 +169,21 @@ public class App extends Application {
 			xAxis2.setTickLabelsVisible(false);
 			barChart2.setBarGap(0);
 			barChart2.setCategoryGap(0);
-            
 
+
+			HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
+			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
 
 
 			HBox firstLine = new HBox();
-			firstLine.getChildren().addAll(cb,cb2, label,checkbox, colorPicker);
+			firstLine.getChildren().addAll(cb,cb2, label,checkbox, colorPicker,slider);
 			firstLine.setAlignment(Pos.CENTER);
 			firstLine.setSpacing(10);
 			firstLine.setPadding(new Insets(5, 5, 5, 5));
 
 
 			HBox histogram = new HBox();
-			histogram.getChildren().addAll(barChart, barChart2);
+			histogram.getChildren().addAll(hi1.collectionAll(), hi2.collectionAll());
 			histogram.setSpacing(1);
 			histogram.setPadding(new Insets(5, 5, 5, 5));
 
@@ -211,31 +223,22 @@ public class App extends Application {
     private ScatterChart<Number, Number> getScatterChart(File file,FileParser fp) {
         ScatterChart<Number,Number> sc = new ScatterChart<>(scxAxis,scyAxis);
 
-        /*sc.setTitle(file.getName());
-        lineChart.setTitle(file.getName());*/
+        sc.setTitle(file.getName());
+        lineChart.setTitle(file.getName());
         sc.setPrefSize(1000,600);
         sc.setLegendVisible(false);
         sc.getData().addAll(createChartData(fp.readData(file),0,0));
         return sc;
     }
 
-    public FileParser makeObject(File file) throws FileNotFoundException {
+
+	public FileParser makeObject(File file) throws FileNotFoundException {
 		String fileNameFormat = file.getAbsolutePath();
-		FileParser fp;
-		if (fileNameFormat.endsWith(".txt")) {
-
-			return new TabDelimited();
-
-		} else if (fileNameFormat.endsWith(".lin")) {
-
-			return new LineOriented();
-		}
-
-		return null;
+		return (FileParser)(fileNameFormat.endsWith(".txt")?new TabDelimited():(fileNameFormat.endsWith(".lin")?new LineOriented():null));
 	}
 
 	private Series<Number, Number> createChartData(List<Variable> lst, int var1, int var2) {
-		XYChart.Series<Number, Number> series1 =  new XYChart.Series<>();
+		XYChart.Series<Number, Number> series1;
 		series1 = new XYChart.Series<>();
 
 		if(lst.size() == 2){
@@ -255,7 +258,7 @@ public class App extends Application {
 					XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(dm1.getValue(i), dm2.getValue(i));
 					series1.getData().add(dataPoint);
 					Circle circle = new Circle();
-					circle.setRadius(2);		//TODO SCALE
+					circle.setRadius(3);		//TODO SCALE
 					dataPoint.setNode(circle);
 
 				}
@@ -276,6 +279,7 @@ public class App extends Application {
 
 		ObservableList<Series<String, Double>> answer = FXCollections.observableArrayList();
 		Series<String, Double> aSeries = new Series<String, Double>();
+
 
 		Variable dm1 = lst.get(select);
 		aSeries.setName(dm1.getName());
