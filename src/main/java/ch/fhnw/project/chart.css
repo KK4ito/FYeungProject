@@ -1,9 +1,12 @@
-.chart-plot-background {
+/*.chart-plot-background {
 -fx-background-color: transparent;
-}
+}*/
+
 .default-color0.chart-series-line {
 -fx-stroke: black;
-} 
-.default-color0.chart-line-symbol { 
-    -fx-background-color: orange, orange;
 }
+.default-color0.chart-line-symbol {
+    -fx-background-color: black, black;
+}
+
+

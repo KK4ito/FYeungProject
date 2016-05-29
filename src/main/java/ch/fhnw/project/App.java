@@ -43,7 +43,7 @@ public class App extends Application {
 	ComboBox cb = new ComboBox();
 	ComboBox cb2 = new ComboBox();
 
-	double circle;
+
 
 
 
@@ -137,6 +137,9 @@ public class App extends Application {
 
             lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
 
+			HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
+			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
+
 
 			colorPicker.setOnAction(new EventHandler() {
 				public void handle(Event t) {
@@ -149,30 +152,6 @@ public class App extends Application {
 
 
 
-			CategoryAxis xAxis = new CategoryAxis();
-			NumberAxis yAxis = new NumberAxis();
-			BarChart barChart = new BarChart(xAxis, yAxis);
-			barChart.setData(createBarChartData(fp.readData(file),0));
-			//barChart.setLegendVisible(true);
-			xAxis.setTickLabelsVisible(false);
-			barChart.setBarGap(0);
-			barChart.setCategoryGap(0);
-			barChart.setCategoryGap(0);
-
-
-
-
-			CategoryAxis xAxis2 = new CategoryAxis();
-			NumberAxis yAxis2 = new NumberAxis();
-			BarChart barChart2 = new BarChart(xAxis2, yAxis2);
-			barChart2.setData(createBarChartData(fp.readData(file),1));
-			xAxis2.setTickLabelsVisible(false);
-			barChart2.setBarGap(0);
-			barChart2.setCategoryGap(0);
-
-
-			HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
-			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
 
 
 			HBox firstLine = new HBox();
@@ -275,43 +254,7 @@ public class App extends Application {
 	}
 
 
-	private ObservableList<Series<String, Double>> createBarChartData(List<Variable> lst, int select) {
 
-		ObservableList<Series<String, Double>> answer = FXCollections.observableArrayList();
-		Series<String, Double> aSeries = new Series<String, Double>();
-
-
-		Variable dm1 = lst.get(select);
-		aSeries.setName(dm1.getName());
-		Double max = Collections.max(dm1.getValues());
-		Double min = Collections.min((dm1.getValues()));
-
-		double range = ceil(Math.sqrt(dm1.getValues().size()));
-		double width = Math.abs((max-min)/range);
-
-
-		int count = 0;
-		int testCount =0;
-
-		for (int i = 0; i < range; i++) {
-			for (int m = 0 ; m < dm1.getValues().size(); m++){
-
-				if(min+width*i<=dm1.getValue(m) && min+width*(i+1)>=dm1.getValue(m)){
-					count++;
-				}
-			}
-			System.out.println(count);
-			aSeries.getData().add(new XYChart.Data(Integer.toString(i), count));
-			testCount+=count;
-			count=0;
-		}
-		System.out.println(dm1.getValues().size());
-		System.out.println("range:" +range);
-		System.out.println("count:" +testCount);
-		answer.addAll(aSeries);
-
-		return answer;
-	}
 
 	public static void main(String[] args){
 		launch(args);
