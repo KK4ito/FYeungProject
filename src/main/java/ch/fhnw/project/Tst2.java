@@ -10,6 +10,8 @@ import ch.fhnw.project.io.TabDelimited;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -47,7 +49,9 @@ public class Tst2 extends Application {
         final ScatterChart sc = new ScatterChart(scxAxis,scyAxis);
         final LineChart lc = new LineChart(slxAxis,slyAxis);
 
-        final ComboBox cb1 = new ComboBox();
+
+        final ComboBox cb1=new ComboBox();
+
         final ComboBox cb2 = new ComboBox();
 
         final Label label1 = new Label("Axis1");
@@ -56,11 +60,11 @@ public class Tst2 extends Application {
 
 
         FileChooser filechooser = new FileChooser();
-        File file = filechooser.showOpenDialog(primaryStage);
+        //File file = filechooser.showOpenDialog(primaryStage);
 
 
 
-       // File file = new File("bin/helvetia.txt");
+        File file = new File("bin/helvetia.txt");
         StackPane pane = new StackPane();
 
 
@@ -71,17 +75,30 @@ public class Tst2 extends Application {
 
         fp.readData(file);
 
-        Variable va1 = fp.readData(file).get(0);
-        Variable va2 = fp.readData(file).get(1);
+
+        final Variable va1 = fp.readData(file).get(0);
+        final Variable va2 = fp.readData(file).get(1);
 
         final XYChart.Series serie = new XYChart.Series();
-        final XYChart.Series serie1 = new XYChart.Series();
+        final XYChart.Series serieLineChart = new XYChart.Series();
             scxAxis.setLabel(va1.getName());
             scyAxis.setLabel(va2.getName());
             slxAxis.setLabel(va1.getName());
             slyAxis.setLabel(va2.getName());
 
 
+            HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
+            HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
+
+
+            for (Variable variable : fp.readData(file)) {
+                cb1.getItems().add(variable.getName());
+                cb2.getItems().add(variable.getName());
+            }
+
+            
+
+            
 
         CheckBox checkbox = new CheckBox("Line");
         checkbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -92,7 +109,7 @@ public class Tst2 extends Application {
             }
         });
 
-       final Slider slider = new Slider(0,20,5);
+       final Slider slider = new Slider(0,10,5);
        final  ColorPicker colorPicker = new ColorPicker();
          colorPicker.setValue(Color.BLUE);
 
@@ -107,39 +124,35 @@ public class Tst2 extends Application {
         });
 
 
-            createDataLine(va1, va2, serie1);
+            createDataLine(va1, va2, serieLineChart);
 
 
             lc.setLegendVisible(false);
-        lc.setAnimated(false);
-        lc.setCreateSymbols(true);
-        lc.setAlternativeRowFillVisible(false);
-        lc.setAlternativeColumnFillVisible(false);
-        lc.setHorizontalGridLinesVisible(true);
-        lc.setVerticalGridLinesVisible(true);
-        lc.getXAxis().setVisible(false);
-        lc.getYAxis().setVisible(false);
-        lc.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
-        lc.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
-        lc.setTitle(file.getName());
-        lc.setVisible(checkbox.isSelected());
-        lc.getData().add(serie1);
+            lc.setAnimated(false);
+            lc.setCreateSymbols(true);
+            lc.setAlternativeRowFillVisible(false);
+            lc.setAlternativeColumnFillVisible(false);
+            lc.setHorizontalGridLinesVisible(true);
+            lc.setVerticalGridLinesVisible(true);
+            lc.getXAxis().setVisible(false);
+            lc.getYAxis().setVisible(false);
+            lc.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
+            lc.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
+            lc.setTitle(file.getName());
+            lc.setVisible(checkbox.isSelected());
+            lc.getData().add(serieLineChart);
 
-        sc.setLegendVisible(false);
-        sc.setTitle(file.getName());
-        sc.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent");
-        sc.getData().addAll(createData(va1, va2,slider,colorPicker));
-
-
-
-        HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
-        HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
+            sc.setLegendVisible(false);
+            sc.setTitle(file.getName());
+            sc.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent");
+            sc.getData().addAll(createData(va1, va2,slider,colorPicker));
 
 
 
 
-        StackPane stackpane = new StackPane();
-        stackpane.getChildren().addAll(sc,lc);
+
+            StackPane stackpane = new StackPane();
+            stackpane.getChildren().addAll(sc,lc);
 
             FlowPane histo = new FlowPane();
             histo.getChildren().addAll(hi1.collectionAll(),hi2.collectionAll());
@@ -156,17 +169,13 @@ public class Tst2 extends Application {
         firstLine.setPadding(new Insets(10, 5, 10, 5));
             firstLine.setStyle("-fx-background-color: lightblue");
 
-        /*HBox plotAndLine = new HBox();
-        plotAndLine.getChildren().addAll(stackpane);
-        plotAndLine.setSpacing(5);
-        plotAndLine.setPadding(new Insets(5, 5, 5, 5));*/
 
-       HBox histogram = new HBox();
+      /* HBox histogram = new HBox();
         histogram.getChildren().addAll(hi1.collectionAll(),hi2.collectionAll());
         histogram.setSpacing(10);
         histogram.setPadding(new Insets(5, 5, 5, 5));
             histogram.setStyle("-fx-background-color: lightyellow");
-
+*/
         VBox vBox = new VBox();
         vBox.getChildren().addAll(firstLine,stackpane,hi1.collectionAll(),hi2.collectionAll());
         vBox.setAlignment(Pos.CENTER);
@@ -179,7 +188,7 @@ public class Tst2 extends Application {
         Scene scene = new Scene(pane, 700, 800);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Hello JavaFX!");
+        primaryStage.setTitle("Project!");
         primaryStage.show();
 
         } catch (FileNotFoundException e) {
@@ -188,12 +197,11 @@ public class Tst2 extends Application {
 
     }
 
-    private void createDataLine(Variable va1, Variable va2, XYChart.Series serie1) {
+    private void createDataLine(Variable va1, Variable va2, XYChart.Series serieLine) {
         for(int i =0; i<va1.getValues().size();i++) {
 
             XYChart.Data dataPoint = new XYChart.Data(va1.getValue(i), va2.getValue(i));
-            serie1.getData().add(dataPoint);
-
+            serieLine.getData().add(dataPoint);
 
             Circle circle = new Circle();
             circle.setRadius(1);
@@ -228,7 +236,7 @@ public class Tst2 extends Application {
 
     public FileParser makeObject(File file) throws FileNotFoundException {
         String fileNameFormat = file.getAbsolutePath();
-        return (FileParser)(fileNameFormat.endsWith(".txt")?new TabDelimited():(fileNameFormat.endsWith(".lin")?new LineOriented():null));
+        return fileNameFormat.endsWith(".txt")?new TabDelimited():(fileNameFormat.endsWith(".lin")?new LineOriented():null);
     }
 
 
