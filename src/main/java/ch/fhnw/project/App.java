@@ -31,7 +31,7 @@ import java.util.*;
 
 public class App extends Application {
 
-
+	List<Variable> lstData;
 	Button btnLoadFile = new Button("Import data");
 	StackPane pane;
 	ColorPicker colorPicker = new ColorPicker();
@@ -39,7 +39,7 @@ public class App extends Application {
 	Stage activeStage;
 	Slider slider = new Slider(0,100,20);
 
-	NumberAxis scxAxis = new NumberAxis();
+	 NumberAxis scxAxis = new NumberAxis();
 	 NumberAxis scyAxis = new NumberAxis();
 
 	 NumberAxis linexAxis = new NumberAxis();
@@ -47,6 +47,7 @@ public class App extends Application {
 
 	 StackPane root = new StackPane();
 	 LineChart<Number, Number> lineChart ;
+	ScatterChart<Number, Number> sc;
 
 	ComboBox cb = new ComboBox();
 	ComboBox cb2 = new ComboBox();
@@ -54,8 +55,23 @@ public class App extends Application {
 	File file;
 	final FileChooser fileChooser = new FileChooser();
 
+
+	private void refreshData(String t){
+		scxAxis.setLabel(t);
+		linexAxis.setLabel(t);
+
+		sc.getData().removeAll();
+		lineChart.getData().removeAll();
+		List<Variable> newList = new ArrayList<Variable>();
+		newList.add(lstData.get(cb.getSelectionModel().getSelectedIndex()));
+		newList.add(lstData.get(cb2.getSelectionModel().getSelectedIndex()));
+		sc.getData().addAll(createChartData(newList,0,0));
+		lineChart.getData().add(createChartData(newList,0,0));
+	}
 	public void loadDataFromFile(File file, Stage stage){
 
+		cb.getItems().removeAll(cb.getItems());
+		cb2.getItems().removeAll(cb2.getItems());
 		try {
 			FileParser fp;
 			fp = makeObject(file);
@@ -78,26 +94,29 @@ public class App extends Application {
 			});
 
 
-
 			for (Variable model : fp.readData(file)) {
 
 				cb.getItems().add(model.getName());
 				cb2.getItems().add(model.getName());
 			}
 
+			cb.getSelectionModel().select(0);
+			cb2.getSelectionModel().select(1);
+			cb.setDisable(true);
+			cb2.setDisable(true);
 
-			cb.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			cb.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
-				public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-					System.out.println(cb.getItems().get((Integer) number2));
+				public void changed(ObservableValue observableValue, String t, String t2) {
+					refreshData(t2);
 
 				}
 			});
 
-			cb2.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			cb2.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
-				public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-					System.out.println(cb2.getItems().get((Integer) number2));
+				public void changed(ObservableValue observableValue, String t, String t2) {
+					refreshData(t2);
 				}
 			});
 
@@ -117,13 +136,12 @@ public class App extends Application {
 			lineChart.getYAxis().setVisible(false);
 			lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
 			lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
-			//	lineChart.setTitle(file.getName());
 			lineChart.setVisible(checkbox.isSelected());
-
-
-			ScatterChart<Number, Number> sc = getScatterChart(file,fp);
-
 			lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
+
+			sc = getScatterChart(file,fp);
+
+
 
 			HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
 			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
@@ -234,10 +252,12 @@ public class App extends Application {
 	}
 
 	private Series<Number, Number> createChartData(List<Variable> lst, int var1, int var2) {
-		XYChart.Series<Number, Number> series1;
-		series1 = new XYChart.Series<>();
-
-		if(lst.size() == 2){
+		if(lst.size() > 2 ) {
+			cb.setDisable(false);
+			cb2.setDisable(false);
+			this.lstData = lst;
+		}
+		if(lst.size() >= 2){
 			Variable dm1 = lst.get(0);
 			Variable dm2 = lst.get(1);
 			if(!(dm1.getValues().size() == dm2.getValues().size())){
@@ -250,27 +270,30 @@ public class App extends Application {
                 linexAxis.setLabel(dm1.getName());
                 lineyAxis.setLabel(dm2.getName());
 
-				for (int i = 0 ; i < dm1.getValues().size(); i++){
-					XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(dm1.getValue(i), dm2.getValue(i));
-					series1.getData().add(dataPoint);
-					Circle circle = new Circle();
-					circle.setRadius(3);		//TODO SCALE
-					dataPoint.setNode(circle);
-
-				}
-
-				return series1;
+				return getXYChartSerie(dm1, dm2);
 			}
 
 		}
 		else {
-			//TODO for more Var.
+
+
 		}
 		System.out.println("ERROR");
 		return null;
 	}
 
+	private XYChart.Series<Number, Number> getXYChartSerie(Variable dm1, Variable dm2){
+		XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
 
+		for (int i = 0 ; i < dm1.getValues().size(); i++){
+			XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(dm1.getValue(i), dm2.getValue(i));
+			series1.getData().add(dataPoint);
+			Circle circle = new Circle();
+			circle.setRadius(3);		//TODO SCALE
+			dataPoint.setNode(circle);
+		}
+		return series1;
+	}
 
 
 	public static void main(String[] args){
