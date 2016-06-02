@@ -30,24 +30,18 @@ public class HistogramChart {
         this.select = select;
     }
 
-
-    //barChart.setLegendVisible(true);
-
-
-
-
     private ObservableList<XYChart.Series<String, Double>> createBarChartData(List<Variable> lst, int select) {
 
         ObservableList<XYChart.Series<String, Double>> answer = FXCollections.observableArrayList();
         XYChart.Series<String, Double> aSeries = new XYChart.Series<String, Double>();
 
 
-        Variable dm1 = lst.get(select);
-        aSeries.setName(dm1.getName());
-        Double max = Collections.max(dm1.getValues());
-        Double min = Collections.min((dm1.getValues()));
+        Variable var1 = lst.get(select);
+        aSeries.setName(var1.getName());
+        Double max = Collections.max(var1.getValues());
+        Double min = Collections.min((var1.getValues()));
 
-        double range = ceil(Math.sqrt(dm1.getValues().size()));
+        double range = ceil(Math.sqrt(var1.getValues().size()));
         double width = Math.abs((max-min)/range);
 
 
@@ -55,9 +49,9 @@ public class HistogramChart {
         int testCount =0;
 
         for (int i = 0; i < range; i++) {
-            for (int m = 0 ; m < dm1.getValues().size(); m++){
+            for (int m = 0 ; m < var1.getValues().size(); m++){
 
-                if(min+width*i<=dm1.getValue(m) && min+width*(i+1)>=dm1.getValue(m)){
+                if(min+width*i<=var1.getValue(m) && min+width*(i+1)>=var1.getValue(m)){
                     count++;
                 }
             }
@@ -66,7 +60,7 @@ public class HistogramChart {
             testCount+=count;
             count=0;
         }
-        System.out.println(dm1.getValues().size());
+        System.out.println(var1.getValues().size());
         System.out.println("range:" +range);
         System.out.println("count:" +testCount);
         answer.addAll(aSeries);

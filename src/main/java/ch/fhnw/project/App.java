@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-import static java.lang.StrictMath.ceil;
+
 
 
 public class App extends Application {

@@ -170,12 +170,6 @@ public class Tst2 extends Application {
             firstLine.setStyle("-fx-background-color: lightblue");
 
 
-      /* HBox histogram = new HBox();
-        histogram.getChildren().addAll(hi1.collectionAll(),hi2.collectionAll());
-        histogram.setSpacing(10);
-        histogram.setPadding(new Insets(5, 5, 5, 5));
-            histogram.setStyle("-fx-background-color: lightyellow");
-*/
         VBox vBox = new VBox();
         vBox.getChildren().addAll(firstLine,stackpane,hi1.collectionAll(),hi2.collectionAll());
         vBox.setAlignment(Pos.CENTER);
