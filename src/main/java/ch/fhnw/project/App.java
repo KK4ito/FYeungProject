@@ -21,15 +21,23 @@ import javafx.scene.shape.Circle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.event.ActionEvent;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 
 
 
 public class App extends Application {
+
+
+	Button btnLoadFile = new Button("Import data");
+	StackPane pane;
+	ColorPicker colorPicker = new ColorPicker();
+	Scene scene;
+	Stage activeStage;
+	Slider slider = new Slider(0,100,20);
 
 	NumberAxis scxAxis = new NumberAxis();
 	 NumberAxis scyAxis = new NumberAxis();
@@ -43,31 +51,14 @@ public class App extends Application {
 	ComboBox cb = new ComboBox();
 	ComboBox cb2 = new ComboBox();
 
+	File file;
+	final FileChooser fileChooser = new FileChooser();
 
+	public void loadDataFromFile(File file, Stage stage){
 
-
-
-	@Override
-	public void start(Stage stage) {
-
-		StackPane pane = new StackPane();
-
-		FileChooser filechooser = new FileChooser();
-		File file = filechooser.showOpenDialog(stage);
-	//	File file = new File("bin/helvetia.txt");
-	//	File file = new File("bin/temperatur-basel-all.txt");
-	//	File file = new File("bin/survey-results.txt");
-	//	File file = new File("bin/test.txt");
-
-		final ColorPicker colorPicker = new ColorPicker();
-		//colorPicker.setValue(Color.CORAL);
-
-		Slider slider = new Slider(0,100,20);
-
-		FileParser fp;
 		try {
-
-			fp= makeObject(file);
+			FileParser fp;
+			fp = makeObject(file);
 			fp.readData(file);
 			Label label;
 
@@ -77,15 +68,12 @@ public class App extends Application {
 			else {
 				label = new Label("NA");
 			}
-
-
-
 			CheckBox checkbox = new CheckBox("Line");
 			checkbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 					lineChart.setVisible(newValue);
-                    root.requestLayout();
+					root.requestLayout();
 				}
 			});
 
@@ -118,7 +106,7 @@ public class App extends Application {
 
 			lineChart = new LineChart<>(linexAxis, lineyAxis);
 
-            lineChart.setLegendVisible(false);
+			lineChart.setLegendVisible(false);
 			lineChart.setAnimated(false);
 			lineChart.setCreateSymbols(true);
 			lineChart.setAlternativeRowFillVisible(false);
@@ -129,13 +117,13 @@ public class App extends Application {
 			lineChart.getYAxis().setVisible(false);
 			lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
 			lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
-		//	lineChart.setTitle(file.getName());
+			//	lineChart.setTitle(file.getName());
 			lineChart.setVisible(checkbox.isSelected());
 
 
 			ScatterChart<Number, Number> sc = getScatterChart(file,fp);
 
-            lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
+			lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
 
 			HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
 			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
@@ -155,7 +143,7 @@ public class App extends Application {
 
 
 			HBox firstLine = new HBox();
-			firstLine.getChildren().addAll(cb,cb2, label,checkbox, colorPicker,slider);
+			firstLine.getChildren().addAll(cb,cb2, label,checkbox, colorPicker,slider, btnLoadFile);
 			firstLine.setAlignment(Pos.CENTER);
 			firstLine.setSpacing(10);
 			firstLine.setPadding(new Insets(5, 5, 5, 5));
@@ -182,11 +170,10 @@ public class App extends Application {
 			vBox.setSpacing(10);
 			vBox.setPadding(new Insets(5, 5, 5, 5));
 
-
-
+			pane = new StackPane();
 			pane.getChildren().add(vBox);
 
-			Scene scene = new Scene(pane, 800, 800);
+			scene = new Scene(pane, 800, 800);
 
 			stage.setScene(scene);
 			stage.setTitle("Hello JavaFX!");
@@ -195,6 +182,36 @@ public class App extends Application {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+
+	@Override
+	public void start(Stage stage) {
+		this.activeStage = stage;
+		btnLoadFile.setOnAction(
+				new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(final ActionEvent e) {
+						file = fileChooser.showOpenDialog(activeStage);
+						if (file != null) {
+							activeStage.close();
+							Stage newStage = new Stage();
+							newStage.setTitle("New Stage");
+							activeStage = newStage;
+							loadDataFromFile(file, newStage);
+						}
+					}
+				});
+
+
+		file = fileChooser.showOpenDialog(stage);
+		loadDataFromFile(file, stage);
+	//	File file = new File("bin/helvetia.txt");
+	//	File file = new File("bin/temperatur-basel-all.txt");
+	//	File file = new File("bin/survey-results.txt");
+	//	File file = new File("bin/test.txt");
+
 
 
 	}
