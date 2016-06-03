@@ -87,8 +87,8 @@ public class Tst2 extends Application {
             slyAxis.setLabel(va2.getName());
 
 
-            HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
-            HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
+            HistogramChart hi1 = new HistogramChart(fp.readData(file));
+            HistogramChart hi2 = new HistogramChart(fp.readData(file));
 
 
             for (Variable variable : fp.readData(file)) {
@@ -155,7 +155,7 @@ public class Tst2 extends Application {
             stackpane.getChildren().addAll(sc,lc);
 
             FlowPane histo = new FlowPane();
-            histo.getChildren().addAll(hi1.collectionAll(),hi2.collectionAll());
+            histo.getChildren().addAll(hi1.collectionAll(0),hi2.collectionAll(1));
 
 
 
@@ -171,7 +171,7 @@ public class Tst2 extends Application {
 
 
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(firstLine,stackpane,hi1.collectionAll(),hi2.collectionAll());
+        vBox.getChildren().addAll(firstLine,stackpane,hi1.collectionAll(0),hi2.collectionAll(1));
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
         vBox.setPadding(new Insets(5, 5, 5, 5));

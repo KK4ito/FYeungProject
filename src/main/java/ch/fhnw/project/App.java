@@ -35,6 +35,8 @@ public class App extends Application {
 	StackPane pane;
 	ColorPicker colorPicker = new ColorPicker(Color.BLUE);
 
+	Label xAxis = new Label("xAxis: ");
+	Label yAxis = new Label("yAxis: ");
 	Scene scene;
 	Stage activeStage;
 	Slider slider = new Slider(0,10,5);
@@ -51,6 +53,11 @@ public class App extends Application {
 
 	ComboBox cb = new ComboBox();
 	ComboBox cb2 = new ComboBox();
+
+
+
+	Alert alert = new Alert(Alert.AlertType.WARNING);
+
 
 
 
@@ -79,6 +86,7 @@ public class App extends Application {
 
 		cb.getItems().removeAll(cb.getItems());
 		cb2.getItems().removeAll(cb2.getItems());
+
 		try {
 			FileParser fp;
 			fp = makeObject(file);
@@ -109,13 +117,13 @@ public class App extends Application {
 
 				cb.getItems().add(model.getName());
 				cb2.getItems().add(model.getName());
+
 			}
 
 			cb.getSelectionModel().select(0);
 			cb2.getSelectionModel().select(1);
 			cb.setDisable(true);
 			cb2.setDisable(true);
-
 			cb.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue observableValue, String t, String t2) {
@@ -141,7 +149,7 @@ public class App extends Application {
 
 
 			HBox firstLine = new HBox();
-			firstLine.getChildren().addAll(cb,cb2, label,checkbox, colorPicker,slider, btnLoadFile);
+			firstLine.getChildren().addAll(xAxis,cb,yAxis,cb2, label,checkbox, colorPicker,slider, btnLoadFile);
 			firstLine.setStyle("-fx-background-color: lightblue");
 			firstLine.setAlignment(Pos.CENTER);
 			firstLine.setSpacing(10);
@@ -179,6 +187,7 @@ public class App extends Application {
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+
 		}
 	}
 
@@ -249,19 +258,19 @@ public class App extends Application {
 			this.lstData = lst;
 		}
 		if(lst.size() >= 2){
-			Variable dm1 = lst.get(0);
-			Variable dm2 = lst.get(1);
-			if(!(dm1.getValues().size() == dm2.getValues().size())){
+			Variable var1 = lst.get(0);
+			Variable var2 = lst.get(1);
+			if(!(var1.getValues().size() == var2.getValues().size())){
 				System.out.println("ERROR");
 			}
 			else{
 				System.out.println("OK");
-				scxAxis.setLabel(dm1.getName());
-				scyAxis.setLabel(dm2.getName());
-                linexAxis.setLabel(dm1.getName());
-                lineyAxis.setLabel(dm2.getName());
+				scxAxis.setLabel(var1.getName());
+				scyAxis.setLabel(var2.getName());
+                linexAxis.setLabel(var1.getName());
+                lineyAxis.setLabel(var2.getName());
 
-				return getXYChartSerie(dm1, dm2);
+				return getXYChartSerie(var1, var2);
 			}
 
 		}
@@ -269,20 +278,26 @@ public class App extends Application {
 
 
 		}
-		System.out.println("ERROR");
+
+		alert.setTitle("Warning Dialog");
+		alert.setHeaderText("File-Problem");
+		alert.setContentText("Cannot open");
+
+		alert.showAndWait();
 		return null;
 	}
 
-	private XYChart.Series<Number, Number> getXYChartSerie(Variable dm1, Variable dm2){
+	private XYChart.Series<Number, Number> getXYChartSerie(Variable var1, Variable var2){
 		XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
 
-		for (int i = 0 ; i < dm1.getValues().size(); i++){
-			XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(dm1.getValue(i), dm2.getValue(i));
+		for (int i = 0 ; i < var1.getValues().size(); i++){
+			XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(var1.getValue(i), var2.getValue(i));
 			series1.getData().add(dataPoint);
 			Circle circle = new Circle();
+
+
 			circle.setRadius(slider.getValue());
 			circle.setFill(colorPicker.getValue());
-
 			circle.radiusProperty().bind(slider.valueProperty());
 			circle.fillProperty().bind(colorPicker.valueProperty());
 
