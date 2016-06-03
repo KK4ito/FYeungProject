@@ -8,7 +8,7 @@ import java.io.*;
 
 public interface FileParser {
 
-	List<Variable> readData(File file);
+	List<Variable> readData(File file) throws IOException;
 
 }
 

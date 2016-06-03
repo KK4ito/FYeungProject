@@ -10,12 +10,13 @@ import ch.fhnw.project.io.TabDelimited;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class ExampleTest {
 
     @Test
-    public void testTabDelimited() {
+    public void testTabDelimited() throws IOException {
 
     	System.out.println("TEST TAB");
     	File file = new File("src/main/resources/helvetia.txt");
@@ -36,13 +37,13 @@ public class ExampleTest {
     }
     
     @Test
-    public void testLineOriented(){
+    public void testLineOriented() throws IOException {
     	
     	System.out.println("TEST LINE");
     	
     	File file = new File("src/main/resources/reference-data.lin");
     	FileParser fp = new LineOriented();
-    	
+
     	fp.readData(file);
     	for(Variable m : fp.readData(file)){
         	System.out.print(m.getName() + " Values: ");
@@ -56,7 +57,7 @@ public class ExampleTest {
     }
 
 	@Test
-	public  void testName(){
+	public  void testName() throws IOException {
 		System.out.println("Test name");
 
 		File file = new File("helvetia.txt");

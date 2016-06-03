@@ -55,14 +55,10 @@ public class HistogramChart {
                     count++;
                 }
             }
-            System.out.println(count);
             aSeries.getData().add(new XYChart.Data(Integer.toString(i), count));
             testCount+=count;
             count=0;
         }
-        System.out.println(var1.getValues().size());
-        System.out.println("range:" +range);
-        System.out.println("count:" +testCount);
         answer.addAll(aSeries);
 
         return answer;

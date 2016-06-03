@@ -9,13 +9,18 @@ import java.io.*;
 public class TabDelimited implements FileParser{
 
 	@Override
-	public List<Variable> readData(File file) {
+	public List<Variable> readData(File file) throws IOException {
 		List<Variable> lstData = new ArrayList<>();
 		
 		
-		try{
-			FileReader fileReader = new FileReader(file);
-			BufferedReader br = new BufferedReader(fileReader);
+		//try{
+		FileReader fileReader = null;
+		try {
+			fileReader = new FileReader(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		BufferedReader br = new BufferedReader(fileReader);
 			String line = br.readLine();
 			String[] splittedString = line.split("\\t");
 				
@@ -34,10 +39,10 @@ public class TabDelimited implements FileParser{
 			br.close();
 			fileReader.close();
 			
-		}
-		catch(IOException e){
-			e.printStackTrace();
-		}
+		//}
+		//catch(IOException e){
+		//	e.printStackTrace();
+		//}
 		
 		return lstData;
 		

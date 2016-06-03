@@ -6,9 +6,6 @@ import ch.fhnw.project.io.*;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,7 +16,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -82,7 +78,7 @@ public class App extends Application {
 		lineChart.getData().add(createChartData(newList));
 	}
 
-	public void loadDataFromFile(File file, Stage stage){
+	public void loadDataFromFile(File file, Stage stage) throws IOException {
 
 		cb.getItems().removeAll(cb.getItems());
 		cb2.getItems().removeAll(cb2.getItems());
@@ -168,8 +164,6 @@ public class App extends Application {
 			root.getChildren().addAll(sc, lineChart);
 
 
-			System.out.println(sc.getData().get(0).getData());
-			System.out.println(lineChart.getData().get(0).getData());
 			VBox vBox = new VBox();
 			vBox.getChildren().addAll(firstLine,root,histogram);
 			vBox.setAlignment(Pos.CENTER);
@@ -191,7 +185,7 @@ public class App extends Application {
 		}
 	}
 
-	private void lineChartSetting(File file, FileParser fp, CheckBox checkbox) {
+	private void lineChartSetting(File file, FileParser fp, CheckBox checkbox) throws IOException {
 		lineChart = new LineChart<>(linexAxis, lineyAxis);
 
 		lineChart.setLegendVisible(false);
@@ -211,7 +205,7 @@ public class App extends Application {
 
 
 	@Override
-	public void start(Stage stage) {
+	public void start(Stage stage) throws IOException {
 		this.activeStage = stage;
 		btnLoadFile.setOnAction(
 				new EventHandler<ActionEvent>() {
@@ -223,7 +217,12 @@ public class App extends Application {
 							Stage newStage = new Stage();
 							newStage.setTitle("New Stage");
 							activeStage = newStage;
-							loadDataFromFile(file, newStage);
+							try {
+								loadDataFromFile(file, newStage);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+								alertWarning();
+							}
 						}
 					}
 				});
@@ -234,7 +233,7 @@ public class App extends Application {
 
 	}
 
-    private ScatterChart<Number, Number> getScatterChart(File file,FileParser fp) {
+    private ScatterChart<Number, Number> getScatterChart(File file,FileParser fp) throws IOException {
         ScatterChart<Number,Number> sc = new ScatterChart<>(scxAxis,scyAxis);
 
         sc.setTitle(file.getName());
@@ -244,7 +243,6 @@ public class App extends Application {
         sc.getData().addAll(createChartData(fp.readData(file)));
         return sc;
     }
-
 
 	public FileParser makeObject(File file) throws FileNotFoundException {
 		String fileNameFormat = file.getAbsolutePath();
@@ -261,10 +259,10 @@ public class App extends Application {
 			Variable var1 = lst.get(0);
 			Variable var2 = lst.get(1);
 			if(!(var1.getValues().size() == var2.getValues().size())){
-				System.out.println("ERROR");
+
+				alertWarning();
 			}
 			else{
-				System.out.println("OK");
 				scxAxis.setLabel(var1.getName());
 				scyAxis.setLabel(var2.getName());
                 linexAxis.setLabel(var1.getName());
@@ -274,17 +272,19 @@ public class App extends Application {
 			}
 
 		}
-		else {
+		alertWarning();
 
 
-		}
 
+		return null;
+	}
+
+	private void alertWarning() {
 		alert.setTitle("Warning Dialog");
 		alert.setHeaderText("File-Problem");
 		alert.setContentText("Cannot open");
 
 		alert.showAndWait();
-		return null;
 	}
 
 	private XYChart.Series<Number, Number> getXYChartSerie(Variable var1, Variable var2){
@@ -305,7 +305,6 @@ public class App extends Application {
 		}
 		return series1;
 	}
-
 
 
 	public static void main(String[] args){

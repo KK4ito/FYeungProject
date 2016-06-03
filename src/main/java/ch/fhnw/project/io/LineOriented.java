@@ -1,8 +1,6 @@
 package ch.fhnw.project.io;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +14,12 @@ public class LineOriented implements FileParser{
 	private char delimiter;
 	
 	@Override
-	public List<Variable> readData(File file) {
+	public List<Variable> readData(File file) throws IOException {
 
 		/*this.file = file;*/
 		List<Variable> lstData = new ArrayList<>();
 		String line;
-		try{
+	//	try{
 			FileReader fileReader = new FileReader(file);
 			BufferedReader br = new BufferedReader(fileReader);
 			//Count Variable
@@ -42,9 +40,9 @@ public class LineOriented implements FileParser{
 				
 			}
 	
-		} catch(Exception e){
-			e.printStackTrace();
-		}
+		//} catch(Exception e){
+		//	e.printStackTrace();
+	//	}
 		return lstData;
 	}
 
