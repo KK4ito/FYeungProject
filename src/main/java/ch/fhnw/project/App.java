@@ -17,6 +17,7 @@ import javafx.scene.chart.*;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.transform.Scale;
 import javafx.stage.FileChooser;
@@ -37,7 +38,7 @@ public class App extends Application {
 	ColorPicker colorPicker = new ColorPicker();
 	Scene scene;
 	Stage activeStage;
-	Slider slider = new Slider(0,100,20);
+	Slider slider = new Slider(0,10,5);
 
 	 NumberAxis scxAxis = new NumberAxis();
 	 NumberAxis scyAxis = new NumberAxis();
@@ -65,8 +66,8 @@ public class App extends Application {
 		List<Variable> newList = new ArrayList<Variable>();
 		newList.add(lstData.get(cb.getSelectionModel().getSelectedIndex()));
 		newList.add(lstData.get(cb2.getSelectionModel().getSelectedIndex()));
-		sc.getData().addAll(createChartData(newList,0,0));
-		lineChart.getData().add(createChartData(newList,0,0));
+		sc.getData().addAll(createChartData(newList));
+		lineChart.getData().add(createChartData(newList));
 	}
 	public void loadDataFromFile(File file, Stage stage){
 
@@ -92,6 +93,8 @@ public class App extends Application {
 					root.requestLayout();
 				}
 			});
+
+
 
 
 			for (Variable model : fp.readData(file)) {
@@ -137,7 +140,7 @@ public class App extends Application {
 			lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
 			lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
 			lineChart.setVisible(checkbox.isSelected());
-			lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
+			lineChart.getData().addAll(createChartData(fp.readData(file)));
 
 			sc = getScatterChart(file,fp);
 
@@ -150,7 +153,7 @@ public class App extends Application {
 			colorPicker.setOnAction(new EventHandler() {
 				public void handle(Event t) {
 
-					lineChart.getData().addAll(createChartData(fp.readData(file),0,0));
+					lineChart.getData().addAll(createChartData(fp.readData(file)));
 
 				}
 			});
@@ -194,7 +197,7 @@ public class App extends Application {
 			scene = new Scene(pane, 800, 800);
 
 			stage.setScene(scene);
-			stage.setTitle("Hello JavaFX!");
+			stage.setTitle("Project");
 			stage.show();
 
 		} catch (FileNotFoundException e) {
@@ -241,7 +244,7 @@ public class App extends Application {
         lineChart.setTitle(file.getName());
         sc.setPrefSize(1000,600);
         sc.setLegendVisible(false);
-        sc.getData().addAll(createChartData(fp.readData(file),0,0));
+        sc.getData().addAll(createChartData(fp.readData(file)));
         return sc;
     }
 
@@ -251,7 +254,7 @@ public class App extends Application {
 		return (FileParser)(fileNameFormat.endsWith(".txt")?new TabDelimited():(fileNameFormat.endsWith(".lin")?new LineOriented():null));
 	}
 
-	private Series<Number, Number> createChartData(List<Variable> lst, int var1, int var2) {
+	private Series<Number, Number> createChartData(List<Variable> lst) {
 		if(lst.size() > 2 ) {
 			cb.setDisable(false);
 			cb2.setDisable(false);
@@ -289,7 +292,12 @@ public class App extends Application {
 			XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(dm1.getValue(i), dm2.getValue(i));
 			series1.getData().add(dataPoint);
 			Circle circle = new Circle();
-			circle.setRadius(3);		//TODO SCALE
+			circle.setRadius(slider.getValue());		//TODO SCALE
+			slider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+
+				circle.setRadius(slider.getValue());
+
+			});
 			dataPoint.setNode(circle);
 		}
 		return series1;
