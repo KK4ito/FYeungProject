@@ -22,12 +22,12 @@ public class HistogramChart {
     CategoryAxis xAxis = new CategoryAxis();
     NumberAxis yAxis = new NumberAxis();
     BarChart barChart = new BarChart(xAxis, yAxis);
-    int select;
+    //int select;
     List <Variable> lst;
 
-    public HistogramChart(List<Variable> lst, int select){
+    public HistogramChart(List<Variable> lst){
         this.lst = lst;
-        this.select = select;
+
     }
 
     private ObservableList<XYChart.Series<String, Double>> createBarChartData(List<Variable> lst, int select) {
@@ -72,10 +72,11 @@ public class HistogramChart {
         barChart.setBarGap(0);
         barChart.setCategoryGap(0);
         barChart.setCategoryGap(0);
+        barChart.setPrefWidth(1000);
         return this.barChart;
     }
 
-    public BarChart collectionAll(){
+    public BarChart collectionAll(int select){
         barChart.setData(createBarChartData(lst,select));
         xAxis.setTickLabelsVisible(false);
         settings();

@@ -28,14 +28,13 @@ import java.io.*;
 import java.util.*;
 
 
-
-
 public class App extends Application {
 
 	List<Variable> lstData;
 	Button btnLoadFile = new Button("Import data");
 	StackPane pane;
-	ColorPicker colorPicker = new ColorPicker();
+	ColorPicker colorPicker = new ColorPicker(Color.BLUE);
+
 	Scene scene;
 	Stage activeStage;
 	Slider slider = new Slider(0,10,5);
@@ -53,8 +52,11 @@ public class App extends Application {
 	ComboBox cb = new ComboBox();
 	ComboBox cb2 = new ComboBox();
 
+
+
 	File file;
 	final FileChooser fileChooser = new FileChooser();
+
 
 
 	private void refreshData(String t){
@@ -68,6 +70,7 @@ public class App extends Application {
 		List<Variable> newList = new ArrayList<Variable>();
 		newList.add(lstData.get(cb.getSelectionModel().getSelectedIndex()));
 		newList.add(lstData.get(cb2.getSelectionModel().getSelectedIndex()));
+
 		sc.getData().addAll(createChartData(newList));
 		lineChart.getData().add(createChartData(newList));
 	}
@@ -81,6 +84,10 @@ public class App extends Application {
 			fp = makeObject(file);
 			fp.readData(file);
 			Label label;
+
+			HistogramChart hi1 = new HistogramChart(fp.readData(file));
+			HistogramChart hi2 = new HistogramChart(fp.readData(file));
+
 
 			if(file.exists()){
 				label = new Label("Found");
@@ -98,8 +105,6 @@ public class App extends Application {
 			});
 
 
-
-
 			for (Variable model : fp.readData(file)) {
 
 				cb.getItems().add(model.getName());
@@ -115,68 +120,44 @@ public class App extends Application {
 				@Override
 				public void changed(ObservableValue observableValue, String t, String t2) {
 					refreshData(t2);
-
+					hi1.collectionAll(cb.getSelectionModel().getSelectedIndex());
 				}
 			});
 
 			cb2.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue observableValue, String t, String t2) {
+
 					refreshData(t2);
+					hi2.collectionAll(cb2.getSelectionModel().getSelectedIndex());
 				}
 			});
 
 
-
-
-			lineChart = new LineChart<>(linexAxis, lineyAxis);
-
-			lineChart.setLegendVisible(false);
-			lineChart.setAnimated(false);
-			lineChart.setCreateSymbols(true);
-			lineChart.setAlternativeRowFillVisible(false);
-			lineChart.setAlternativeColumnFillVisible(false);
-			lineChart.setHorizontalGridLinesVisible(false);
-			lineChart.setVerticalGridLinesVisible(false);
-			lineChart.getXAxis().setVisible(false);
-			lineChart.getYAxis().setVisible(false);
-			lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
-			lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
-			lineChart.setVisible(checkbox.isSelected());
-			lineChart.getData().addAll(createChartData(fp.readData(file)));
-
+			lineChartSetting(file, fp, checkbox);
 			sc = getScatterChart(file,fp);
-
-
-
-			HistogramChart hi1 = new HistogramChart(fp.readData(file),0);
-			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
-
-
-
-
 
 
 
 
 			HBox firstLine = new HBox();
 			firstLine.getChildren().addAll(cb,cb2, label,checkbox, colorPicker,slider, btnLoadFile);
+			firstLine.setStyle("-fx-background-color: lightblue");
 			firstLine.setAlignment(Pos.CENTER);
 			firstLine.setSpacing(10);
 			firstLine.setPadding(new Insets(5, 5, 5, 5));
 
 
 			HBox histogram = new HBox();
-			histogram.getChildren().addAll(hi1.collectionAll(), hi2.collectionAll());
-			histogram.setSpacing(1);
+			histogram.getChildren().addAll(hi1.collectionAll(0),hi2.collectionAll(1));
+			histogram.setAlignment(Pos.CENTER);
+			histogram.setSpacing(10);
 			histogram.setPadding(new Insets(5, 5, 5, 5));
 
 
 			root = new StackPane();
 
-
 			root.getChildren().addAll(sc, lineChart);
-
 
 
 			System.out.println(sc.getData().get(0).getData());
@@ -201,6 +182,23 @@ public class App extends Application {
 		}
 	}
 
+	private void lineChartSetting(File file, FileParser fp, CheckBox checkbox) {
+		lineChart = new LineChart<>(linexAxis, lineyAxis);
+
+		lineChart.setLegendVisible(false);
+		lineChart.setAnimated(false);
+		lineChart.setCreateSymbols(true);
+		lineChart.setAlternativeRowFillVisible(false);
+		lineChart.setAlternativeColumnFillVisible(false);
+		lineChart.setHorizontalGridLinesVisible(false);
+		lineChart.setVerticalGridLinesVisible(false);
+		lineChart.getXAxis().setVisible(false);
+		lineChart.getYAxis().setVisible(false);
+		lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
+		lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
+		lineChart.setVisible(checkbox.isSelected());
+		lineChart.getData().addAll(createChartData(fp.readData(file)));
+	}
 
 
 	@Override
@@ -224,12 +222,6 @@ public class App extends Application {
 
 		file = fileChooser.showOpenDialog(stage);
 		loadDataFromFile(file, stage);
-	//	File file = new File("bin/helvetia.txt");
-	//	File file = new File("bin/temperatur-basel-all.txt");
-	//	File file = new File("bin/survey-results.txt");
-	//	File file = new File("bin/test.txt");
-
-
 
 	}
 
@@ -238,7 +230,7 @@ public class App extends Application {
 
         sc.setTitle(file.getName());
         lineChart.setTitle(file.getName());
-        sc.setPrefSize(1000,600);
+
         sc.setLegendVisible(false);
         sc.getData().addAll(createChartData(fp.readData(file)));
         return sc;
@@ -288,18 +280,17 @@ public class App extends Application {
 			XYChart.Data<Number, Number> dataPoint = new XYChart.Data<>(dm1.getValue(i), dm2.getValue(i));
 			series1.getData().add(dataPoint);
 			Circle circle = new Circle();
-			circle.setRadius(slider.getValue());		//TODO SCALE
-			slider.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+			circle.setRadius(slider.getValue());
+			circle.setFill(colorPicker.getValue());
 
-				circle.setRadius(slider.getValue());
-
-			});
-
+			circle.radiusProperty().bind(slider.valueProperty());
+			circle.fillProperty().bind(colorPicker.valueProperty());
 
 			dataPoint.setNode(circle);
 		}
 		return series1;
 	}
+
 
 
 	public static void main(String[] args){
