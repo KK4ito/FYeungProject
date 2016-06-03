@@ -63,12 +63,15 @@ public class App extends Application {
 
 		sc.getData().removeAll();
 		lineChart.getData().removeAll();
+		sc.getData().clear();
+		lineChart.getData().clear();
 		List<Variable> newList = new ArrayList<Variable>();
 		newList.add(lstData.get(cb.getSelectionModel().getSelectedIndex()));
 		newList.add(lstData.get(cb2.getSelectionModel().getSelectedIndex()));
 		sc.getData().addAll(createChartData(newList));
 		lineChart.getData().add(createChartData(newList));
 	}
+
 	public void loadDataFromFile(File file, Stage stage){
 
 		cb.getItems().removeAll(cb.getItems());
@@ -150,13 +153,6 @@ public class App extends Application {
 			HistogramChart hi2 = new HistogramChart(fp.readData(file),1);
 
 
-			colorPicker.setOnAction(new EventHandler() {
-				public void handle(Event t) {
-
-					lineChart.getData().addAll(createChartData(fp.readData(file)));
-
-				}
-			});
 
 
 
@@ -298,6 +294,8 @@ public class App extends Application {
 				circle.setRadius(slider.getValue());
 
 			});
+
+
 			dataPoint.setNode(circle);
 		}
 		return series1;
