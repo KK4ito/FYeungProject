@@ -26,9 +26,12 @@ import java.util.*;
 
 public class App extends Application {
 
-	List<Variable> lstData = new ArrayList<>();
+    public ProgressBar pb = new ProgressBar();
 
-	Button btnLoadFile = new Button("Import data");
+	List<Variable> lstData = new ArrayList<>();
+    List<Variable> lstInput = new ArrayList<>();
+
+    Button btnLoadFile = new Button("Import data");
 	StackPane pane;
 	ColorPicker colorPicker = new ColorPicker(Color.BLUE);
 
@@ -89,11 +92,15 @@ public class App extends Application {
 		try {
 			FileParser fp;
 			fp = makeObject(file);
-			fp.readData(file);
-			Label label;
 
-			HistogramChart hi1 = new HistogramChart(fp.readData(file));
-			HistogramChart hi2 = new HistogramChart(fp.readData(file));
+
+			lstInput = fp.readData(file);
+
+            Label label;
+
+
+			HistogramChart hi1 = new HistogramChart(lstInput);
+			HistogramChart hi2 = new HistogramChart(lstInput);
 
 
 			if(file.exists()){
@@ -112,7 +119,7 @@ public class App extends Application {
 			});
 
 
-			for (Variable model : fp.readData(file)) {
+			for (Variable model : lstInput) {
 
 				cb.getItems().add(model.getName());
 				cb2.getItems().add(model.getName());
@@ -208,7 +215,7 @@ public class App extends Application {
 		lineChart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
 		lineChart.getStylesheets().addAll(getClass().getResource("chart.css").toExternalForm());
 		lineChart.setVisible(checkbox.isSelected());
-		lineChart.getData().addAll(createChartData(fp.readData(file)));
+		lineChart.getData().addAll(createChartData(lstInput));
 	}
 
 
@@ -248,7 +255,7 @@ public class App extends Application {
         lineChart.setTitle(file.getName());
 
         sc.setLegendVisible(false);
-        sc.getData().addAll(createChartData(fp.readData(file)));
+        sc.getData().addAll(createChartData(lstInput));
         return sc;
     }
 

@@ -64,7 +64,6 @@ public class HistogramChart {
 
             return answer;
         }catch(IndexOutOfBoundsException e){
-            //TODO Something cool here
             return null;
         }
     }
