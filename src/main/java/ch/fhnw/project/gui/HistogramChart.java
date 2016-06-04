@@ -32,36 +32,41 @@ public class HistogramChart {
 
     private ObservableList<XYChart.Series<String, Double>> createBarChartData(List<Variable> lst, int select) {
 
-        ObservableList<XYChart.Series<String, Double>> answer = FXCollections.observableArrayList();
-        XYChart.Series<String, Double> aSeries = new XYChart.Series<String, Double>();
+        try {
+            ObservableList<XYChart.Series<String, Double>> answer = FXCollections.observableArrayList();
+            XYChart.Series<String, Double> aSeries = new XYChart.Series<String, Double>();
 
 
-        Variable var1 = lst.get(select);
-        aSeries.setName(var1.getName());
-        Double max = Collections.max(var1.getValues());
-        Double min = Collections.min((var1.getValues()));
+            Variable var1 = lst.get(select);
+            aSeries.setName(var1.getName());
+            Double max = Collections.max(var1.getValues());
+            Double min = Collections.min((var1.getValues()));
 
-        double range = ceil(Math.sqrt(var1.getValues().size()));
-        double width = Math.abs((max-min)/range);
+            double range = ceil(Math.sqrt(var1.getValues().size()));
+            double width = Math.abs((max - min) / range);
 
 
-        int count = 0;
-        int testCount =0;
+            int count = 0;
+            int testCount = 0;
 
-        for (int i = 0; i < range; i++) {
-            for (int m = 0 ; m < var1.getValues().size(); m++){
+            for (int i = 0; i < range; i++) {
+                for (int m = 0; m < var1.getValues().size(); m++) {
 
-                if(min+width*i<=var1.getValue(m) && min+width*(i+1)>=var1.getValue(m)){
-                    count++;
+                    if (min + width * i <= var1.getValue(m) && min + width * (i + 1) >= var1.getValue(m)) {
+                        count++;
+                    }
                 }
+                aSeries.getData().add(new XYChart.Data(Integer.toString(i), count));
+                testCount += count;
+                count = 0;
             }
-            aSeries.getData().add(new XYChart.Data(Integer.toString(i), count));
-            testCount+=count;
-            count=0;
-        }
-        answer.addAll(aSeries);
+            answer.addAll(aSeries);
 
-        return answer;
+            return answer;
+        }catch(IndexOutOfBoundsException e){
+            //TODO Something cool here
+            return null;
+        }
     }
 
     private BarChart settings(){

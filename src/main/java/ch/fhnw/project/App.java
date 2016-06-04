@@ -26,7 +26,8 @@ import java.util.*;
 
 public class App extends Application {
 
-	List<Variable> lstData;
+	List<Variable> lstData = new ArrayList<>();
+
 	Button btnLoadFile = new Button("Import data");
 	StackPane pane;
 	ColorPicker colorPicker = new ColorPicker(Color.BLUE);
@@ -71,11 +72,13 @@ public class App extends Application {
 		sc.getData().clear();
 		lineChart.getData().clear();
 		List<Variable> newList = new ArrayList<Variable>();
-		newList.add(lstData.get(cb.getSelectionModel().getSelectedIndex()));
-		newList.add(lstData.get(cb2.getSelectionModel().getSelectedIndex()));
+        if(lstData.size() > 0) {
+            newList.add(lstData.get(cb.getSelectionModel().getSelectedIndex()));
+            newList.add(lstData.get(cb2.getSelectionModel().getSelectedIndex()));
 
-		sc.getData().addAll(createChartData(newList));
-		lineChart.getData().add(createChartData(newList));
+            sc.getData().addAll(createChartData(newList));
+            lineChart.getData().add(createChartData(newList));
+        }
 	}
 
 	public void loadDataFromFile(File file, Stage stage) throws IOException {
@@ -123,17 +126,22 @@ public class App extends Application {
 			cb.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue observableValue, String t, String t2) {
-					refreshData(t2);
-					hi1.collectionAll(cb.getSelectionModel().getSelectedIndex());
+					if(t2 != null){
+						refreshData(t2);
+						hi1.collectionAll(cb.getSelectionModel().getSelectedIndex());
+					}
+
 				}
 			});
 
 			cb2.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue observableValue, String t, String t2) {
+					if(t2 != null){
+						refreshData(t2);
+						hi2.collectionAll(cb2.getSelectionModel().getSelectedIndex());
+					}
 
-					refreshData(t2);
-					hi2.collectionAll(cb2.getSelectionModel().getSelectedIndex());
 				}
 			});
 
