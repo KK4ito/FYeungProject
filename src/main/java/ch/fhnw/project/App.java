@@ -26,8 +26,6 @@ import java.util.*;
 
 public class App extends Application {
 
-    public ProgressBar pb = new ProgressBar();
-
 	List<Variable> lstData = new ArrayList<>();
     List<Variable> lstInput = new ArrayList<>();
 

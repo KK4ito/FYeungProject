@@ -4,12 +4,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.fhnw.project.App;
+
 import ch.fhnw.project.datenmodell.Variable;
-import javafx.concurrent.Service;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
+
 
 public class LineOriented implements FileParser{
 
@@ -21,18 +18,6 @@ public class LineOriented implements FileParser{
 
 	@Override
 	public List<Variable> readData(File file) throws IOException {
-		Group root = new Group();
-		Stage stage = new Stage();
-		ProgressBar pb = new ProgressBar();
-
-
-		stage.setTitle("Loading data");
-		root.getChildren().addAll(pb);
-
-		stage.setScene(new Scene(root, 300, 150));
-		stage.show();
-
-
 
 		/*this.file = file;*/
 		List<Variable> lstData = new ArrayList<>();
@@ -58,8 +43,6 @@ public class LineOriented implements FileParser{
 			for (String s : splitted) {
 				lstData.get(i).addValue(Double.parseDouble(s));
 			}
-			steps+=steps;
-			pb.setProgress(steps);
 		}
 	
 		//} catch(Exception e){

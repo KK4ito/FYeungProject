@@ -18,18 +18,6 @@ public class TabDelimited implements FileParser{
 	@Override
 	public List<Variable> readData(File file) throws IOException {
 		List<Variable> lstData = new ArrayList<>();
-		Group root = new Group();
-		Stage stage = new Stage();
-		ProgressBar pb = new ProgressBar();
-
-
-		stage.setTitle("Loading data");
-		root.getChildren().addAll(pb);
-
-		stage.setScene(new Scene(root, 300, 150));
-		stage.show();
-
-
 
 		//try{
 		FileReader fileReader = null;
@@ -52,8 +40,6 @@ public class TabDelimited implements FileParser{
 
 				for(int x = 0; x < splittedString.length; x++){
 					lstData.get(x).addValue(Double.parseDouble(splittedValue[x]));
-					steps += steps;
-					pb.setProgress(steps);
 				}
 				
 			}
